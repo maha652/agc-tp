@@ -26,10 +26,10 @@ import nwalign3 as nw
 
 __author__ = "Maha GRAA"
 __copyright__ = "Universite Paris Diderot"
-__credits__ = ["Your Name"]
+__credits__ = ["Maha GRAA"]
 __license__ = "GPL"
 __version__ = "1.0.0"
-__maintainer__ = "Your Name"
+__maintainer__ = "Maha GRAA"
 __email__ = "mahagraa.geniebio@gmail.com"
 __status__ = "Developpement"
 
@@ -71,11 +71,62 @@ def get_arguments():
     return parser.parse_args()
 
 def read_fasta(amplicon_file, minseqlen):
-    pass
+    #min_seq = []
+    seq =""
+   
+    #with gzip.open(amplicon_file, "rt") as  monfich:
+        #for line in monfich:
+            #if line.startswith('>') :
+               # if seq ==
+                #if len(seq)>= minseqlen:
+                    #yield seq
+                #seq = ""
+            #elif line.startswith ('>') :
+               # if seq == "":
+                    #continue
+            #else:
+               # seq += line.strip()
+        #if len(seq)>= minseqlen:
+            #yield seq
+
+    with gzip.open(amplicon_file, "rt") as  monfich:
+        seq = ""
+        for line in monfich:
+            if line[0] == '>' :
+             if seq == "" : 
+                continue
+             elif seq != "" :
+                if len(seq)>= minseqlen:
+                    yield seq
+                seq =""
+            else :
+              seq += line.strip()
+        if len(seq)>= minseqlen:
+            yield seq
 
 
 def dereplication_fulllength(amplicon_file, minseqlen, mincount):
-    pass
+    unique_sequences=[]
+    occurences=[]
+
+    sequences=read_fasta(amplicon_file, minseqlen)
+    for sequence in sequences:
+
+        if sequence not in unique_sequences:
+
+            unique_sequences.append(sequence)
+            occurences.append(1)
+        else :
+            index=unique_sequences.index(sequence)
+            occurences[index]=occurences[index]+1
+
+    oc_unique=sorted(zip(occurences,unique_sequences),reverse=True)
+    unique_sorted=[seq for _,seq in oc_unique]
+    occurences_sorted=[occ for occ,_ in oc_unique]
+    print(occurences_sorted)
+    for i in range(len(occurences_sorted)):
+        if occurences_sorted[i]>mincount:
+            yield [unique_sorted[i], occurences_sorted[i]]
 
 def get_identity(alignment_list):
     """Prend en une liste de séquences alignées au format ["SE-QUENCE1", "SE-QUENCE2"]
