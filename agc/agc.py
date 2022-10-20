@@ -14,6 +14,7 @@
 """OTU clustering"""
 
 import argparse
+from ctypes import alignment
 import sys
 import os
 import gzip
@@ -126,18 +127,42 @@ def dereplication_fulllength(amplicon_file, minseqlen, mincount):
     print(occurences_sorted)
     for i in range(len(occurences_sorted)):
         if occurences_sorted[i]>mincount:
+
             yield [unique_sorted[i], occurences_sorted[i]]
 
 def get_identity(alignment_list):
     """Prend en une liste de séquences alignées au format ["SE-QUENCE1", "SE-QUENCE2"]
     Retourne le pourcentage d'identite entre les deux."""
-    pass
+    identique=0
+    premiere_sequence = alignment_list[0]
+    deuxieme_sequence = alignment_list [1]
+    for j in range (len(premiere_sequence)) :
+        if premiere_sequence[j] == deuxieme_sequence[j]:
+            identique +=1
+    return 100 * identique/len(premiere_sequence)   
 
 def abundance_greedy_clustering(amplicon_file, minseqlen, mincount, chunk_size, kmer_size):
-    pass
+    otu = []
 
+   
+    for unique_sorted , occurences_sorted in dereplication_fulllength(amplicon_file, minseqlen, mincount):
+        if not otu :
+            otu.append([unique_sorted,occurences_sorted])
+         
+    for i in otu : 
+        align= nw.global_align(i[0], unique_sorted, gap_open=-1, gap_extend=-1,
+        matrix=os.path.abspath(os.path.join(os.path.dirname(__file__),"MATCH")))
+        if get_identity(align) > 97 :
+            continue
+        otu.append([unique_sorted,occurences_sorted])
+
+    return(otu)
+
+  
 def write_OTU(OTU_list, output_file):
-    pass
+   with open(output_file, "w") as file:
+        for i in range(len(OTU_list)):
+            file.write(">OTU_" + str(i + 1) + " occurrence:" + str(OTU_list[i][1]) + "\n" + textwrap.fill((OTU_list[i][0]), width=80) + "\n")
 
 #==============================================================
 # Main program
