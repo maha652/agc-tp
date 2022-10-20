@@ -24,13 +24,13 @@ from collections import Counter
 # ftp://ftp.ncbi.nih.gov/blast/matrices/
 import nwalign3 as nw
 
-__author__ = "Your Name"
+__author__ = "Maha GRAA"
 __copyright__ = "Universite Paris Diderot"
 __credits__ = ["Your Name"]
 __license__ = "GPL"
 __version__ = "1.0.0"
 __maintainer__ = "Your Name"
-__email__ = "your@email.fr"
+__email__ = "mahagraa.geniebio@gmail.com"
 __status__ = "Developpement"
 
 
